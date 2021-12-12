@@ -112,6 +112,8 @@ public class Environnement {
         Direction[] dirs = Direction.values();
         for(int i = 0; i<sizeY; i++){
             for(int j = 0; j<sizeX; j++){
+                char c = grid.get(i).get(j);
+                if(c == '0') continue;
                 boolean nCond = i>0;
                 boolean sCond = i < sizeY-1;
                 boolean eCond = j < sizeX-1;
@@ -125,7 +127,6 @@ public class Environnement {
                         sCond,
                         sCond && oCond,
                         oCond};
-                char c = grid.get(i).get(j);
                 for (int d = 0; d<dirs.length ; d++){
                     if (dirCond[d]){
                         switch (dirs[d]){
