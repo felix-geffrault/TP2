@@ -16,8 +16,9 @@ public class Agent extends Thread{
     private int memorySize;
     private int nbTurn;
     private Random r = new Random();
+    private double error;
 
-    public Agent(double kMinus, double kPlus, int memorySize, int nbTurn){
+    public Agent(double kMinus, double kPlus, int memorySize, int nbTurn, double error){
         this.memory = new ArrayList<Character>();
         this.kMinus = kMinus;
         this.kPlus = kPlus;
@@ -25,6 +26,7 @@ public class Agent extends Thread{
         this.lastStep = 8;
         this.memorySize = memorySize;
         this.nbTurn = nbTurn;
+        this.error = error;
     }
 
     @Override
@@ -74,10 +76,14 @@ public class Agent extends Thread{
     }
 
     private boolean drop(){
-        double f = getMemoryFrequency(this.actualCase);
+        double f = getMemoryFrequency(this.hold);
         double p = Math.pow(f / (this.kMinus + f), 2);
-
+/*        System.out.println("p " + p + " f " + f + " hold " + this.hold);
+        System.out.println(memory);*/
         if(Math.random() < p){
+/*
+            System.out.println("Dropped");
+*/
             if (env.agentDeposeNourriture(this, this.hold)) {
                 this.hold = '0';
                 return true;
@@ -123,11 +129,12 @@ public class Agent extends Thread{
     }
 
     private int getNbMemoryOccurrences(char c){
-        return Collections.frequency(this.memory ,this.actualCase);
+        return Collections.frequency(this.memory , c);
     }
 
     private double getMemoryFrequency(char c){
-        return getNbMemoryOccurrences(c) * 1.0 / this.memory.size(); // 1.0 transforme en double
+        int otherObjectFrequency = getNbMemoryOccurrences(this.hold == 'A' ? 'B' : 'A');
+        return (getNbMemoryOccurrences(c) * 1.0 + otherObjectFrequency * this.error) / this.memory.size();
     }
 
     public char getHold() {
