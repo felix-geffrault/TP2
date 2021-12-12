@@ -37,9 +37,9 @@ public class View implements PropertyChangeListener {
         this.pane = pane;
         pane.setPrefTileHeight(tileHeight);
         pane.setPrefTileWidth(tileWidth);
-        pane.setPrefColumns(sizeY);
-        pane.setPrefRows(sizeX);
-        pane.setPrefSize(tileWidth*sizeX,tileHeight*sizeY);
+        /*pane.setPrefColumns(sizeY);
+        pane.setPrefRows(sizeX);*/
+        pane.setPrefSize(tileWidth*sizeX+20,tileHeight*sizeY+20);
         this.env = env;
 
         for(int y=0; y<sizeY; y++){
@@ -54,7 +54,7 @@ public class View implements PropertyChangeListener {
             StackPane stackPane = new StackPane();
             Rectangle r = (Rectangle) pane.getChildren().set(pos[1]*50+pos[0], stackPane);
             stackPane.getChildren().add(r);
-            stackPane.getChildren().add(generateAgent(a));
+            stackPane.getChildren().add(generateAgent(a.getHold()));
         }
     }
 
@@ -80,11 +80,11 @@ public class View implements PropertyChangeListener {
     }
 
     private void agentHoldChanged(PropertyChangeEvent evt) {
-        Map.Entry<Agent, Character> newAgentValue = (Map.Entry<Agent, Character>) evt.getNewValue();
-        Agent a = newAgentValue.getKey();
-        int[] pos = env.getAgentsCoordinates().get(a);
+        Map.Entry<int[], Character> newAgentValue = (Map.Entry<int[], Character>) evt.getNewValue();
+        int[] pos = newAgentValue.getKey();
+        char h = newAgentValue.getValue();
         StackPane stackPane = (StackPane) pane.getChildren().get(pos[1]*50+pos[0]);
-        stackPane.getChildren().set(1, generateAgent(a));
+        stackPane.getChildren().set(1, generateAgent(h));
     }
 
     private void agentPositionChanged(PropertyChangeEvent evt){
@@ -142,24 +142,15 @@ public class View implements PropertyChangeListener {
         return rectangle;
     }
 
-    private Node generateAgent(Agent a){
-        char hold = a.getHold();
+    private Node generateAgent(char hold){
         if(hold == '0'){
-            ImageView imViewA = new ImageView(imgAgent);
-            imViewA.relocate(1,1);
-            return imViewA;
+            Rectangle r = new Rectangle(tileWidth, tileHeight);
+            r.setFill(Color.BLACK);
+            return r;
         }else{
-            StackPane pane = new StackPane();
-            pane.setPrefSize(tileWidth, tileHeight);
-            ImageView imViewA = new ImageView(imgAgent);
-            imViewA.relocate(1,1);
-            pane.getChildren().add(imViewA);
             Rectangle r = generateFoodRectangle(hold);
             r.setStroke(Color.BLACK);
-            r.resize(3,3);
-            r.relocate(tileWidth-4, 1);
-            pane.getChildren().add(r);
-            return pane;
+            return r;
         }
     }
 }

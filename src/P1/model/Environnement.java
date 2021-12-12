@@ -63,24 +63,21 @@ public class Environnement {
             case O, NO, SO -> coords[0]--;
         }
         // Map loop
-        if(coords[0] == sizeX) coords[0] = 0;
-        else if(coords[0] == -1) coords[0] = sizeX-1;
-        if(coords[1] == sizeY) coords[1] = 0;
-        else if (coords[1] == -1) coords[1] = sizeY-1;
+        if(coords[0] == sizeX) coords[0] = coords[0]-1;
+        else if(coords[0] == -1) coords[0] = 0;
+        if(coords[1] == sizeY) coords[1] = coords[1]-1;
+        else if (coords[1] == -1) coords[1] = 0;
     };
 
     public Character agentPickNourriture(Agent a){
-        //System.out.println("agent Pick");
         Character n = setAgentCase(a, '0');
-        //printCountNbFood();
         return n;
     }
 
     public boolean agentDeposeNourriture(Agent a, Character n){
         if(getAgentCase(a) != '0') return false;
         setAgentCase(a, n);
-        //System.out.println("agent Depose");
-        //printCountNbFood();
+        printError();
         return true;
     }
 
@@ -108,6 +105,44 @@ public class Environnement {
             }
         }
         System.out.println("Count Food: " + count);
+    }
+
+    private void printError(){
+        int error = 0;
+        Direction[] dirs = Direction.values();
+        for(int i = 0; i<sizeY; i++){
+            for(int j = 0; j<sizeX; j++){
+                boolean nCond = i>0;
+                boolean sCond = i < sizeY-1;
+                boolean eCond = j < sizeX-1;
+                boolean oCond = j > 0;
+                boolean[] dirCond = new boolean[] {
+                        nCond,
+                        nCond && eCond,
+                        nCond && oCond,
+                        eCond,
+                        eCond && sCond,
+                        sCond,
+                        sCond && oCond,
+                        oCond};
+                char c = grid.get(i).get(j);
+                for (int d = 0; d<dirs.length ; d++){
+                    if (dirCond[d]){
+                        switch (dirs[d]){
+                            case N -> error += grid.get(i-1).get(j) == c ? 0 : 1;
+                            case NE -> error += grid.get(i-1).get(j+1) == c ? 0 : 1;
+                            case NO -> error += grid.get(i-1).get(j-1) == c ? 0 : 1;
+                            case E -> error += grid.get(i).get(j+1) == c ? 0 : 1;
+                            case SE -> error += grid.get(i+1).get(j+1) == c ? 0 : 1;
+                            case S -> error += grid.get(i+1).get(j) == c ? 0 : 1;
+                            case SO -> error += grid.get(i+1).get(j-1) == c ? 0 : 1;
+                            case O -> error += grid.get(i).get(j-1) == c ? 0 : 1;
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println(error);
     }
 
     @Override

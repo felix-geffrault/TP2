@@ -27,7 +27,7 @@ public class Main extends Application {
         int sizeY = 50;
         int nA = 200;
         int nB = 200;
-        int nbTurn = 10_000;
+        int nbTurn = 100_000;
         ArrayList<Agent> agents = new ArrayList<>();
         for(int i = 0; i<nbAgents; i++){
             Agent a = new Agent(kMinus, kPlus, memorySize, nbTurn);

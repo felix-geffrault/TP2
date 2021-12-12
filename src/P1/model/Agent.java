@@ -1,5 +1,6 @@
 package P1.model;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -35,7 +36,7 @@ public class Agent extends Thread{
                     this.perception();
                     this.action();
                 }
-                Thread.sleep(10);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -44,13 +45,14 @@ public class Agent extends Thread{
     }
 
     public void action(){
+        boolean action = false;
         if(this.hold == '0' && this.actualCase != '0'){
-            this.pick();
+            action = this.pick();
         }
         else if(this.hold != '0' && this.actualCase == '0'){
-            this.drop();
+            action = this.drop();
         }
-        this.move();
+        if(!action) this.move();
     }
 
     public void perception(){
@@ -61,29 +63,32 @@ public class Agent extends Thread{
         }
     }
 
-    private void pick(){
+    private boolean pick(){
         double f = getMemoryFrequency(this.actualCase);
         double p = Math.pow(this.kPlus / (this.kPlus + f), 2);
         if(Math.random() < p){
             this.hold = this.env.agentPickNourriture(this);
+            return true;
         }
+        return false;
     }
 
-    private void drop(){
+    private boolean drop(){
         double f = getMemoryFrequency(this.actualCase);
         double p = Math.pow(f / (this.kMinus + f), 2);
+
         if(Math.random() < p){
             if (env.agentDeposeNourriture(this, this.hold)) {
                 this.hold = '0';
+                return true;
             }
         }
+        return false;
     }
 
     private void move(){
         int nextStep = r.nextInt(8);
-        while (nextStep == (this.lastStep + 4) % 8){
-            nextStep = r.nextInt(8);
-        }
+
         switch (nextStep){
             case 0:
                 env.agentMove(this, Direction.NE);

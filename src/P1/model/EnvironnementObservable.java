@@ -30,8 +30,8 @@ public class EnvironnementObservable extends Environnement{
         Map.Entry<int[], Character> oldCaseValue = new AbstractMap.SimpleEntry<>(pos, n);
         Map.Entry<int[], Character> newCaseValue = new AbstractMap.SimpleEntry<>(pos, c);
         support.firePropertyChange("case", oldCaseValue, newCaseValue);
-        Map.Entry<Agent, Character> oldAgentValue = new AbstractMap.SimpleEntry<>(a, c);
-        Map.Entry<Agent, Character> newAgentValue = new AbstractMap.SimpleEntry<>(a, n);
+        Map.Entry<int[], Character> oldAgentValue = new AbstractMap.SimpleEntry<>(pos, c);
+        Map.Entry<int[], Character> newAgentValue = new AbstractMap.SimpleEntry<>(pos, n);
         support.firePropertyChange("hold", oldAgentValue, newAgentValue);
         return n;
     }
