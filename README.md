@@ -40,25 +40,25 @@ Pour les significations graphiques les carrés totalement noirs sont les agents,
 ### Tests :
 
 On a donc testé notre le programme
-Afin d'avoir une meilleure perception de l'évolution du tri des agents, on print une valeur d'erreur qui est la somme cumulée du nombre de case adjacente différente à la case centrale et cela pour toutes les cases.
+Afin d'avoir une meilleure perception de l'évolution du tri des agents, on print une valeur d'erreur qui est la somme cumulée du nombre de case adjacente différente à la case centrale et cela pour toutes les cases ayant un objet.
 Plus le nombre est élevé, plus les différentes cases de nourriture sont éparpillées.
 
-Cette première image montre les agents au vers le début de leur tache
+Cette première image montre les agents vers le début de leur tache
 ![Image1](img/resultat_2.png)
 
-Cette image montre les agents au milieu vers le milieu de leur tache
+Cette image montre les agents vers le milieu de leur tache
 ![Image2](img/resultat_2.png)
 
-On a ensuite décidé de tester nos agents avec et sans erreur sur 100 000 tours.
+On a ensuite décidé de tester nos agents avec et sans erreur de perception sur la mémoire sur 100 000 tours.
 
-Voici l'image de fin de tâche des agents sans pourcentage d'erreur. avec notre valeur d'erreur à 1093.
+Voici l'image de fin de tâche des agents sans pourcentage erreur de perception. Notre valeur d'erreur finale à 1093.
 ![100 000 tours](img/100000_tours.png)
 
-Et la seconde image, représentant les agents avec 0.1 d'erreur
+Et la seconde image, représentant les agents avec 10% d'erreur sur la perception des objets mémorisés.
 ![100 000 tours 0.1% erreur](img/100000_tours_erreur.png)
 
-Si on compare les deux images aux visuels on remarque que pour les agents avec un taux d'erreur de 0.1 ont remaque que certains tas se retrouvent avec 2/3 carrés de mauvaises couleurs, tandis que sans erreur on n'a pas ces soucis-là.
+Si on compare les deux images aux visuels, on remarque que pour les agents avec une erreur de perception, certains tas comprennent un carré de la mauvaise couleur. Tandis que sans erreur de perception, on n'a pas ces soucis-là.
 
-Si on observe maintenant notre valeur d'erreur calculer en fonction de l'environnement. Notre environnement avec les agents sans taux d'erreur a un score de 1093 tandis que ceux avec 0.1% d'erreur ont une valeur de 1263.
+Si on observe maintenant notre valeur d'erreur calculer en fonction de l'environnement. Notre environnement avec les agents sans taux d'erreur a un score de 1093 tandis que ceux avec 10% d'erreur de perception de la mémoire ont une valeur de 1263.
 
-En conclusion on remarque que les agents sont capables de travailler ensemble de façon indépendante, même en ayant un pourcentage d'erreur de 0.1 le rendu final reste acceptable.
+En conclusion on remarque que les agents sont capables de travailler ensemble de façon indépendante. Même en ayant un pourcentage d'erreur de perception de 0.1 le rendu final reste acceptable.
