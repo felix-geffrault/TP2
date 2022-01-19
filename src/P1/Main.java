@@ -24,6 +24,9 @@ public class Main extends Application {
         int sizeY = 50;
         int nA = 200;
         int nB = 200;
+        int nC = 200;
+        int diffusionDistance = 3;
+        double initialSignalIntensity = 1;
         int nbTurn = 100_000;
         double error = 0.1;
         ArrayList<Agent> agents = new ArrayList<>();
@@ -31,7 +34,7 @@ public class Main extends Application {
             Agent a = new Agent(kMinus, kPlus, memorySize, nbTurn, error);
             agents.add(a);
         }
-        EnvironnementObservable env = new EnvironnementObservable(agents, sizeX, sizeY, nA, nB);
+        EnvironnementObservable env = new EnvironnementObservable(agents, sizeX, sizeY, diffusionDistance, initialSignalIntensity, nA, nB, nC);
         TilePane pane = new TilePane();
         View v = new View(pane, env, sizeX, sizeY);
         env.addPropertyChangeListener(v);

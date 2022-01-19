@@ -14,27 +14,34 @@ public class Environnement {
     protected Map<Agent, int[]> agentsCoordinates;
     private final int sizeX;
     private final int sizeY;
-    private int nA;
-    private int nB;
+    protected ArrayList<ArrayList<PheromonIntensity>> pheromonIntensityGrid;
+    private int diffusionDistance;
+    private double initialSignalIntensity;
 
 
-    public Environnement(ArrayList<Agent> agents, int sizeX, int sizeY, int nA, int nB) {
+
+    public Environnement(ArrayList<Agent> agents, int sizeX, int sizeY, int diffusionDistance, double initialSignalIntensity,int nA, int nB, int nC) {
         this.agents = agents;
         this.agentsCoordinates = new HashMap<>();
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.nA = nA;
-        this.nB = nB;
+        this.diffusionDistance = diffusionDistance;
+        this.initialSignalIntensity = initialSignalIntensity;
+
         grid = new ArrayList<>();
+        pheromonIntensityGrid = new ArrayList<>();
         ArrayList<int[]> allPositions = new ArrayList<>();
         for(int i=0; i<sizeY; i++){
             ArrayList<Character> row = new ArrayList<>();
+            ArrayList<PheromonIntensity> pheromonIntensitiesRow = new ArrayList<>();
             for(int j=0; j<sizeX; j++){
                 row.add('0');
+                pheromonIntensitiesRow.add(null);
                 int[] entry = new int[]{j, i};
                 allPositions.add(entry);
             }
             grid.add(row);
+            pheromonIntensityGrid.add(pheromonIntensitiesRow);
         }
         for(int i = 0; i<nA; i++){
             int a = (int) (Math.random()*allPositions.size());
@@ -46,22 +53,33 @@ public class Environnement {
             int[] pos = allPositions.remove(b);
             grid.get(pos[1]).set(pos[0], 'B');
         }
+        for(int i = 0; i<nC; i++){
+            int c = (int) (Math.random()*allPositions.size());
+            int[] pos = allPositions.remove(c);
+            grid.get(pos[1]).set(pos[0], 'C');
+        }
         for(Agent a : agents){
             agentsCoordinates.put(a, new int[]{(int) (Math.random()*sizeX), (int) (Math.random()*sizeY)});
             a.setEnv(this);
         }
     }
 
+    private int[] getMoveResult(int[] coords, Direction d){
+        int[] newCoords = coords.clone();
+        switch (d){
+            case N, NE, NO -> newCoords[1]--;
+            case S, SO, SE -> newCoords[1]++;
+        }
+        switch (d){
+            case E, NE, SE -> newCoords[0]++;
+            case O, NO, SO -> newCoords[0]--;
+        }
+        return newCoords;
+    }
+
     public void agentMove(Agent a, Direction d){
         int[] coords = agentsCoordinates.get(a);
-        switch (d){
-            case N, NE, NO -> coords[1]--;
-            case S, SO, SE -> coords[1]++;
-        }
-        switch (d){
-            case E, NE, SE -> coords[0]++;
-            case O, NO, SO -> coords[0]--;
-        }
+        coords = getMoveResult(coords, d);
         // Map loop
         if(coords[0] == sizeX) coords[0] = coords[0]-1;
         else if(coords[0] == -1) coords[0] = 0;
@@ -81,6 +99,68 @@ public class Environnement {
         return true;
     }
 
+    public void agentCallHelp(Agent a){
+        int[] coords = agentsCoordinates.get(a);
+        diffuseSignal(coords);
+    }
+
+    public boolean agentCameHelp(Agent a){
+        int[] coords = agentsCoordinates.get(a);
+        for(Map.Entry<Agent, int[]> agentCoordinates : agentsCoordinates.entrySet()){
+            int[] agentCoords = agentCoordinates.getValue();
+            Agent agent  = agentCoordinates.getKey();
+            if(agent != a && coords == agentCoords){
+                if(agent.getHold() == 'C' && agent.getAgentHelper() == null){
+                    agent.setAgentHelper(a);
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    private void diffuseSignal(int[] coords){
+        for(int y = coords[1] - diffusionDistance; y < coords[1] + diffusionDistance + 1; y++){
+            for(int x = coords[0] - diffusionDistance; x < coords[0] + diffusionDistance + 1; x++){
+                int transmitterDistance = Math.max(Math.abs(y-coords[1]), Math.abs(x-coords[0]));
+                double intensity = initialSignalIntensity - transmitterDistance * (initialSignalIntensity/this.diffusionDistance);
+                PheromonIntensity prevPheromon = pheromonIntensityGrid.get(coords[1]).get(coords[0]);
+                if(prevPheromon != null && prevPheromon.getValue() > intensity) continue;
+                PheromonIntensity newPheromon = new PheromonIntensity(intensity, new int[]{x, y});
+                pheromonIntensityGrid.get(coords[1]).set(coords[0], newPheromon);
+            }
+        }
+    }
+
+    public void pheromonEvapored(PheromonIntensity pheromon){
+        int[] coords = pheromon.getCoords();
+        pheromonIntensityGrid.get(coords[1]).set(coords[0], null);
+    }
+
+    public boolean isAgentOnPheromon(Agent a) {
+        int coords[] = agentsCoordinates.get(a);
+        return pheromonIntensityGrid.get(coords[1]).get(coords[0]) != null;
+    }
+
+    public Direction getSmellDirection(Agent a){
+        int coords[] = agentsCoordinates.get(a);
+        PheromonIntensity initialPheromon = pheromonIntensityGrid.get(coords[1]).get(coords[0]);
+        double initialIntensity = initialPheromon != null ? initialPheromon.getValue() : null;
+        Direction dir = null;
+        for (Direction d: Direction.values()) {
+            int[] newCoords = getMoveResult(coords, d);
+            PheromonIntensity casePheromon = pheromonIntensityGrid.get(newCoords[1]).get(newCoords[0]);
+            if(casePheromon != null){
+                double caseIntensity = casePheromon != null ? casePheromon.getValue() : 0;
+                if(caseIntensity > initialIntensity){
+                    dir = d;
+                }
+            }
+        }
+        return dir;
+    }
+
     public void start(){
         for (Agent a: agents) a.start();
     }
@@ -97,7 +177,7 @@ public class Environnement {
         return n;
     }
 
-    private void printCountNbFood(){
+    /*private void printCountNbFood(){
         int count = 0;
         for(ArrayList<Character> row : grid){
             for(Character c : row){
@@ -105,7 +185,7 @@ public class Environnement {
             }
         }
         System.out.println("Count Food: " + count);
-    }
+    }*/
 
     private void printError(){
         int error = 0;

@@ -9,8 +9,8 @@ import java.util.Map;
 public class EnvironnementObservable extends Environnement{
     private PropertyChangeSupport support;
 
-    public EnvironnementObservable(ArrayList<Agent> agents, int sizeX, int sizeY, int nA, int nB) {
-        super(agents, sizeX, sizeY, nA, nB);
+    public EnvironnementObservable(ArrayList<Agent> agents, int sizeX, int sizeY, int diffusionDistance, double initialSignalIntensity,int nA, int nB, int nC) {
+        super( agents,  sizeX,  sizeY,  diffusionDistance,  initialSignalIntensity, nA,  nB,  nC);
         support = new PropertyChangeSupport(this);
     }
 
